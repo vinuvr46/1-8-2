@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stopwatch</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="stopwatch">
+        <div class="display">00:00:00</div>
+        <div class="buttons">
+            <button id="start">Start</button>
+            <button id="lap">Lap</button>
+            <button id="stop">Stop</button>
+            <button id="reset">Reset</button>
+        </div>
+        <div class="laps"></div>
+    </div>
+
+    <style>
+        .stopwatch {
+            width: 300px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #f90505;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .display {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .buttons button {
+            background-color: #3498db;
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .laps {
+            margin-top: 20px;
+        }
+
+        .lap {
+            margin-bottom: 5px;
+        }
+    </style>
+
+    <script>
+        const display = document.querySelector('.display');
+        const startButton = document.getElementById('start');
+        const lapButton = document.getElementById('lap');
+        const stopButton = document.getElementById('stop');
+        const resetButton = document.getElementById('reset');
+        const laps = document.querySelector('.laps');
+
+        let startTime;
+        let elapsedTime = 0;
+        let intervalId;
+
+        function formatTime(time) {
+            const milliseconds = Math.floor(time % 1000);
+            const seconds = Math.floor((time / 1000) % 60);
+            const minutes = Math.floor((time / (1000 * 60)) % 60);
+            const hours = Math.floor(time / (1000 * 60 * 60));
+
+            return `${padNumber(hours)}:${padNumber(minutes)}:${padNumber(seconds)}.${padNumber(milliseconds)}`;
+        }
+
+        function padNumber(number) {
+            return number.toString().padStart(2, '0');
+        }
+
+        function start() {
+            startTime = Date.now() - elapsedTime;
+            intervalId = setInterval(updateDisplay, 10);
+        }
+
+        function lap() {
+            const lapTime = Date.now() - startTime;
+            const lapElement = document.createElement('div');
+            lapElement.classList.add('lap');
+            lapElement.textContent = `Lap ${laps.children.length + 1}: ${formatTime(lapTime)}`;
+            laps.appendChild(lapElement);
+        }
+
+        function stop() {
+            clearInterval(intervalId);
+            elapsedTime = Date.now() - startTime;
+        }
+
+        function reset() {
+            clearInterval(intervalId);
+            elapsedTime = 0;
+            display.textContent = '00:00:00';
+            laps.innerHTML = '';
+        }
+
+        function updateDisplay() {
+            const currentTime = Date.now();
+            const elapsed = currentTime - startTime;
+            display.textContent = formatTime(elapsed);
+        }
+
+        startButton.addEventListener('click', start);
+        lapButton.addEventListener('click', lap);
+        stopButton.addEventListener('click', stop);
+        resetButton.addEventListener('click', reset);
+    </script>
+</body>
+</html>
